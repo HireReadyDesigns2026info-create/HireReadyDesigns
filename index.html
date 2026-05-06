@@ -129,7 +129,7 @@
             to { width: 100%; }
         }
 
-        /* CURSOR */
+        /* CURSOR — desktop mouse + mobile touch */
         .cursor {
             width: 18px;
             height: 18px;
@@ -139,8 +139,39 @@
             pointer-events: none;
             transform: translate(-50%, -50%);
             z-index: 999999;
-            transition: transform 0.1s;
+            transition: left 0.08s ease, top 0.08s ease, width 0.15s, height 0.15s;
             box-shadow: 0 0 15px rgba(240,165,0,0.5);
+        }
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 999999;
+            transition: none;
+        }
+        /* Touch ripple for mobile */
+        .touch-ripple {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 999999;
+            animation: rippleOut 0.6s ease forwards;
+        }
+        @keyframes rippleOut {
+            0%   { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+        }
+        /* Hide cursor on mobile by default; JS will show touch ripple instead */
+        @media (max-width: 768px) {
+            .cursor, .cursor-dot { display: none; }
         }
 
         /* PARTICLES */
@@ -217,6 +248,54 @@
         }
 
         nav ul li a:hover { color: var(--gold); }
+
+        /* MOBILE NAV TOGGLE */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+        }
+        .nav-toggle span {
+            width: 22px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 2px;
+            display: block;
+            transition: 0.3s;
+        }
+        .nav-toggle.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-toggle.open span:nth-child(2) { opacity: 0; }
+        .nav-toggle.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* MOBILE DROPDOWN MENU */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: rgba(15,28,58,0.97);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(240,165,0,0.15);
+            z-index: 999;
+            padding: 16px 0;
+            flex-direction: column;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 14px 8%;
+            border-bottom: 1px solid rgba(240,165,0,0.06);
+            transition: 0.3s;
+        }
+        .mobile-menu a:hover { color: var(--gold); background: rgba(240,165,0,0.04); }
 
         /* HERO */
         .hero {
@@ -946,36 +1025,130 @@
         .floating-tech span:nth-child(4) { bottom: 18%; right: 12%; }
 
         @keyframes floatTech {
-            0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0;
-    }
-    10% {
-        opacity: 0.12;
-    }
-    90% {
-        opacity: 0.12;
-    }
-    100% {
-        transform: translateY(-110vh) rotate(360deg);
-        opacity: 0;
-    }
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.12; }
+            90% { opacity: 0.12; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
         }
 
         /* PACKAGE DEMO SECTION */
         .package-demos { padding: 40px 0 80px; }
 
-        /* RESPONSIVE */
-        @media(max-width: 900px) {
+        /* =============================================
+           RESPONSIVE — MOBILE & TABLET ONLY CHANGES
+           No design changes, just layout adjustments
+           ============================================= */
+
+        /* Tablet */
+        @media (max-width: 1024px) {
+            .hero h2 { font-size: 56px; letter-spacing: -2px; }
+            .hero-content { gap: 40px; }
+            .resume-card { width: 320px; height: 420px; }
+        }
+
+        /* Mobile landscape / small tablet */
+        @media (max-width: 900px) {
             .hero-content { grid-template-columns: 1fr; }
             .hero-card { display: none; }
             .hero h2 { font-size: 48px; letter-spacing: -2px; }
+            .hero { padding: 120px 6% 80px; }
+            nav { padding: 16px 6%; }
         }
 
-        @media(max-width: 768px) {
+        /* Mobile */
+        @media (max-width: 768px) {
+            /* Hide desktop nav links, show hamburger */
             nav ul { display: none; }
-            .hero h2 { font-size: 38px; }
-            .section-title h2 { font-size: 30px; }
+            .nav-toggle { display: flex; }
+            .cursor { display: none; }
+
+            /* Hero */
+            .hero { padding: 100px 5% 60px; min-height: auto; }
+            .hero h2 { font-size: 34px; letter-spacing: -1px; margin-bottom: 16px; }
+            .hero p { font-size: 15px; margin-bottom: 24px; }
+            .hero-badge { font-size: 11px; padding: 7px 14px; margin-bottom: 18px; }
+            .btn { padding: 13px 24px; font-size: 13px; }
+            .hero-mini-stats { gap: 12px; margin-top: 28px; }
+            .mini-stat { padding: 14px 18px; }
+            .mini-stat h3 { font-size: 22px; }
+            .mini-stat p { font-size: 11px; }
+
+            /* Section titles */
+            .section-title { margin-bottom: 35px; }
+            .section-title h2 { font-size: 26px; letter-spacing: -0.5px; }
+            .section-title p { font-size: 14px; }
+
+            /* Stats */
+            .stats { padding: 50px 5%; gap: 14px; grid-template-columns: repeat(2, 1fr); }
+            .stat-box { padding: 28px 18px; }
+            .stat-box h3 { font-size: 30px; }
+
+            /* Services */
+            .services { padding: 60px 5%; }
+            .service-grid { grid-template-columns: 1fr; gap: 16px; }
+            .service-card { padding: 28px 22px; }
+
+            /* Video */
+            .video-section { padding: 60px 5%; }
+            .video-box { border-radius: 16px; }
+
+            /* ATS Proof */
+            .ats-proof { padding: 60px 5%; }
+            .proof-container { max-width: 100%; grid-template-columns: repeat(2, 1fr); }
+            .proof-box { padding: 32px 20px; }
+            .bad, .good { font-size: 38px; }
+
+            /* Packages */
+            .packages { padding: 60px 5%; }
+            .package-grid { grid-template-columns: 1fr; gap: 18px; }
+            .package-card { padding: 32px 24px; }
+            .price { font-size: 38px; }
+
+            /* Reviews */
+            .review-section { padding: 60px 5%; }
+            .review-card { min-width: 280px; padding: 26px; }
+
+            /* Timeline */
+            .timeline { padding: 60px 5%; }
+            .timeline-wrapper { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+            .timeline-box { padding: 26px 18px; }
+            .timeline-box h3 { font-size: 34px; }
+
+            /* FAQ */
+            .faq { padding: 60px 5%; }
+            .faq-question { padding: 18px 20px; font-size: 14px; }
+            .faq-answer { padding: 0 20px; }
+            .faq-box.active .faq-answer { padding: 0 20px 18px; }
+
+            /* Contact */
+            .contact { padding: 60px 5%; }
+            .contact-form { padding: 28px 20px; gap: 14px; }
+            .contact-form input,
+            .contact-form textarea,
+            .contact-form select { padding: 14px 16px; font-size: 14px; }
+
+            /* Live popup — hide on very small screens to avoid overlap */
+            .live-popup { display: none; }
+
+            /* WA button — move up a bit on mobile */
+            .whatsapp { width: 52px; height: 52px; font-size: 22px; bottom: 20px; right: 18px; }
+
+            /* Community label */
+            .community-label { display: none; }
+
+            /* Nav logo smaller */
+            .nav-logo { font-size: 18px; }
+            .nav-logo span.designs { font-size: 10px; letter-spacing: 2px; }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 400px) {
+            .hero h2 { font-size: 28px; }
+            .hero-buttons { flex-direction: column; gap: 10px; }
+            .btn { text-align: center; }
+            .proof-container { grid-template-columns: 1fr; }
+            .timeline-wrapper { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
         }
 
     </style>
@@ -1002,7 +1175,8 @@
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
 </div>
 
-<div class="cursor"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
 
 <div class="live-popup" id="livePopup">
     <h4>🔥 New Booking</h4>
@@ -1022,13 +1196,26 @@
         <span class="hire">HIRE </span><span class="ready">READY</span>
         <span class="designs">Designs</span>
     </div>
+    <!-- Desktop nav -->
     <ul>
         <li><a href="#services">Services</a></li>
         <li><a href="#packages">Packages</a></li>
         <li><a href="#reviews">Reviews</a></li>
         <li><a href="#contact">Contact</a></li>
     </ul>
+    <!-- Mobile hamburger -->
+    <div class="nav-toggle" id="navToggle">
+        <span></span><span></span><span></span>
+    </div>
 </nav>
+
+<!-- MOBILE DROPDOWN MENU -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#services" onclick="closeMobileMenu()">Services</a>
+    <a href="#packages" onclick="closeMobileMenu()">Packages</a>
+    <a href="#reviews" onclick="closeMobileMenu()">Reviews</a>
+    <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -1182,7 +1369,6 @@
 
 <!-- PACKAGES -->
 <section class="packages reveal" id="packages">
-
     <div class="section-title">
         <h2>Pricing Packages</h2>
         <p>Choose the perfect plan for your career growth</p>
@@ -1234,7 +1420,6 @@
             <a href="#contact" class="btn primary-btn">Get Started</a>
         </div>
     </div>
-
 </section>
 
 <!-- REVIEWS -->
@@ -1291,7 +1476,6 @@
         <div class="timeline-box"><h3>2</h3><p>Profile Review & Confirmation</p></div>
         <div class="timeline-box"><h3>3</h3><p>Customized Service Execution</p></div>
         <div class="timeline-box"><h3>4</h3><p>Swift Delivery Within 24 Hours</p></div>
-        </p></div>
     </div>
 </section>
 
@@ -1347,11 +1531,25 @@
 
 <a href="https://chat.whatsapp.com/LAR8AK8nnLw17ZwV8tbtsO" class="whatsapp" title="Join Our WhatsApp Community" target="_blank">💬</a>
 
-<div style="position:fixed;bottom:102px;right:22px;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25D366;padding:9px 16px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;backdrop-filter:blur(10px);">
+<div class="community-label" style="position:fixed;bottom:102px;right:22px;background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.3);color:#25D366;padding:9px 16px;border-radius:30px;font-size:13px;font-weight:600;z-index:999;backdrop-filter:blur(10px);">
     Join Our Community
 </div>
 
 <script>
+// MOBILE NAV TOGGLE
+const navToggle = document.getElementById('navToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+
+navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+});
+
+function closeMobileMenu() {
+    navToggle.classList.remove('open');
+    mobileMenu.classList.remove('open');
+}
+
 // FORM SUBMIT
 const form = document.getElementById("bookingForm");
 form.addEventListener("submit", async (e) => {
@@ -1380,12 +1578,51 @@ window.addEventListener('load', () => {
     }, 1900);
 });
 
-// CURSOR
-const cursor = document.querySelector('.cursor');
-window.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
+// CURSOR — mouse (laptop) + touch (mobile)
+const cursor = document.getElementById('cursor');
+const cursorDot = document.getElementById('cursorDot');
+const isTouchDevice = () => window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window);
+
+// MOUSE cursor (laptop)
+let mx = 0, my = 0, cx = 0, cy = 0;
+document.addEventListener('mousemove', (e) => {
+    if (isTouchDevice()) return;
+    mx = e.clientX; my = e.clientY;
+    cursorDot.style.left = mx + 'px';
+    cursorDot.style.top  = my + 'px';
 });
+function animCursor() {
+    cx += (mx - cx) * 0.12;
+    cy += (my - cy) * 0.12;
+    cursor.style.left = cx + 'px';
+    cursor.style.top  = cy + 'px';
+    requestAnimationFrame(animCursor);
+}
+animCursor();
+
+document.addEventListener('mousedown', () => {
+    cursor.style.width  = '28px';
+    cursor.style.height = '28px';
+    cursor.style.background = 'rgba(240,165,0,0.15)';
+});
+document.addEventListener('mouseup', () => {
+    cursor.style.width  = '18px';
+    cursor.style.height = '18px';
+    cursor.style.background = 'transparent';
+});
+
+// TOUCH cursor (mobile) — gold ripple on every tap
+document.addEventListener('touchstart', (e) => {
+    const touches = e.touches;
+    for (let i = 0; i < touches.length; i++) {
+        const ripple = document.createElement('div');
+        ripple.className = 'touch-ripple';
+        ripple.style.left = touches[i].clientX + 'px';
+        ripple.style.top  = touches[i].clientY + 'px';
+        document.body.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove());
+    }
+}, { passive: true });
 
 // SCROLL PROGRESS
 window.addEventListener('scroll', () => {
@@ -1419,47 +1656,34 @@ window.addEventListener('scroll', () => {
         if (r.getBoundingClientRect().top < window.innerHeight - 100) r.classList.add('active');
     });
 });
-// --- MULTIPLE FLOATING ICONS GENERATOR ---
+
+// FLOATING ICONS
 function startFloatingIcons() {
     const iconContainer = document.body;
     const icons = ['💻', '📄', '🚀', '💡'];
-    const iconCount = 80; // Ungalukku neriya venum nu ketadhala count increase panniruken
+    const iconCount = 80;
 
     for (let i = 0; i < iconCount; i++) {
         const icon = document.createElement('div');
         icon.className = 'floating-icon';
         icon.innerText = icons[Math.floor(Math.random() * icons.length)];
-        
-        // Random Horizontal Position
         icon.style.left = Math.random() * 100 + 'vw';
-        
-        // Random Speed (Varied movement for natural look)
-        const duration = Math.random() * 12 + 6; // 6s to 18s
+        const duration = Math.random() * 12 + 6;
         icon.style.animationDuration = duration + 's';
-        
-        // Random Delay (Ellam ore nerathula start aagama irukka)
         icon.style.animationDelay = Math.random() * 15 + 's';
-        
-        // Random Size
         icon.style.fontSize = (Math.random() * 15 + 15) + 'px';
-        
-        // Basic Styles
         icon.style.position = 'fixed';
-        icon.style.bottom = '-50px'; // Screen-ku keela irundhu start aagum
+        icon.style.bottom = '-50px';
         icon.style.zIndex = '-1';
         icon.style.opacity = '0.12';
         icon.style.pointerEvents = 'none';
-        
-        // Animation Link
         icon.style.animationName = 'floatTech';
         icon.style.animationIterationCount = 'infinite';
         icon.style.animationTimingFunction = 'linear';
-        
         iconContainer.appendChild(icon);
     }
 }
 
-// Function-ah call panrom
 startFloatingIcons();
 </script>
 
